@@ -30,6 +30,7 @@ class MyApp < Sinatra::Base
     array_nuevos = []
     error = false
     execption = nil
+    status = 200
     DB.transaction do
       begin
         if nuevos.length != 0
@@ -59,27 +60,26 @@ class MyApp < Sinatra::Base
             Departamento.where(:id => eliminado).delete
           end
         end
+        rpta = {
+          :tipo_mensaje => 'success',
+          :mensaje => [
+            'Se ha registrado los cambios en los departamentos',
+            array_nuevos
+          ]}
       rescue Exception => e
         Sequel::Rollback
         error = true
         execption = e
+        status = 500
+        rpta = {
+          :tipo_mensaje => 'error',
+          :mensaje => [
+            'Se ha producido un error en guardar la tabla de departamentos',
+            execption.message
+          ]}
       end
     end
-    if error == false
-      return {
-        :tipo_mensaje => 'success',
-        :mensaje => [
-          'Se ha registrado los cambios en los departamentos',
-          array_nuevos
-        ]}.to_json
-    else
-      status 500
-      return {
-        :tipo_mensaje => 'error',
-        :mensaje => [
-          'Se ha producido un error en guardar la tabla de departamentos',
-          execption.message
-        ]}.to_json
-    end
+    status status
+    rpta.to_json
   end
 end
