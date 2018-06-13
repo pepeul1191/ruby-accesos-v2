@@ -23,17 +23,7 @@
     "tests"
   ],
   "dependencies": {
-    "qunit": "^2.1.1",
-    "backbone": "^1.3.3",
-    "handlebars": "^4.0.10",
-    "backbone.marionette": "marionette#^3.4.0",
-    "jquery": "^3.2.1",
-    "bootstrap": "^3.3.7",
     "font-awesome": "^4.7.0",
-    "requirejs": "^2.3.4",
-    "swp-plugins": "*",
-    "jquery-ui": "^1.12.1",
-    "jquery-timepicker-wvega": "^1.3.5",
-    "ckeditor": "^4.9.0"
+    "swp-backbone": "^1.0.1"
   }
 }

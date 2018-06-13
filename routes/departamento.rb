@@ -1,6 +1,24 @@
 class MyApp < Sinatra::Base
   get '/departamento/listar' do
-    Departamento.all.to_a.to_json
+    rpta = []
+    error = false
+    execption = nil
+    status = 200
+    begin
+      rpta = Departamento.all.to_a
+    rescue Exception => e
+      error = true
+      execption = e
+      status = 500
+      rpta = {
+        :tipo_mensaje => 'error',
+        :mensaje => [
+          'Se ha producido un error en listar los departamentos',
+          execption.message
+        ]}
+    end
+    status status
+    rpta.to_json
   end
 
   post '/departamento/guardar' do
@@ -16,15 +34,22 @@ class MyApp < Sinatra::Base
       begin
         if nuevos.length != 0
           nuevos.each do |nuevo|
-            n = Departamento.new(:nombre => nuevo['nombre'])
+            n = Departamento.new(
+              :nombre => nuevo['nombre']
+            )
             n.save
-            t = {:temporal => nuevo['id'], :nuevo_id => n.id}
+            t = {
+              :temporal => nuevo['id'],
+              :nuevo_id => n.id
+            }
             array_nuevos.push(t)
           end
         end
         if editados.length != 0
           editados.each do |editado|
-            e = Departamento.where(:id => editado['id']).first
+            e = Departamento.where(
+              :id => editado['id']
+            ).first
             e.nombre = editado['nombre']
             e.save
           end
@@ -41,10 +66,20 @@ class MyApp < Sinatra::Base
       end
     end
     if error == false
-      return {:tipo_mensaje => 'success', :mensaje => ['Se ha registrado los cambios en los departamentos', array_nuevos]}.to_json
+      return {
+        :tipo_mensaje => 'success',
+        :mensaje => [
+          'Se ha registrado los cambios en los departamentos',
+          array_nuevos
+        ]}.to_json
     else
       status 500
-      return {:tipo_mensaje => 'error', :mensaje => ['Se ha producido un error en guardar la tabla de departamentos', execption.message]}.to_json
+      return {
+        :tipo_mensaje => 'error',
+        :mensaje => [
+          'Se ha producido un error en guardar la tabla de departamentos',
+          execption.message
+        ]}.to_json
     end
   end
 end
