@@ -23,3 +23,5 @@ class MyApp < Sinatra::Base
     end
   end
 end
+
+require_relative '../helpers/home_helper'
