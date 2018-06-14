@@ -41,7 +41,9 @@ class MyApp < Sinatra::Base
             n.save
             t = {
               :temporal => nuevo['id'],
-              :nuevo_id => n.id
+              :nuevo_id => nuevo['id'],
+              :version => nuevo['version'],
+              :repositorio => nuevo['repositorio']
             }
             array_nuevos.push(t)
           end
@@ -52,6 +54,8 @@ class MyApp < Sinatra::Base
               :id => editado['id']
             ).first
             e.nombre = editado['nombre']
+            e.version = editado['version']
+            e.repositorio = editado['repositorio']
             e.save
           end
         end
