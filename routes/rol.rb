@@ -85,4 +85,39 @@ class MyApp < Sinatra::Base
     status status
     rpta.to_json
   end
+
+  get '/rol/permiso/listar/:sistema_id/:rol_id' do
+    rpta = []
+    error = false
+    execption = nil
+    status = 200
+    begin
+      sistema_id = params['sistema_id']
+      rol_id = params['rol_id']
+      rpta = DB.fetch('
+    		SELECT T.id AS id, T.nombre AS nombre, (CASE WHEN (P.existe = 1) THEN 1 ELSE 0 END) AS existe, T.llave AS llave FROM
+    		(
+    			SELECT id, nombre, llave, 0 AS existe FROM permisos WHERE sistema_id = ' + sistema_id + '
+    		) T
+    		LEFT JOIN
+    		(
+    			SELECT P.id, P.nombre,  P.llave, 1 AS existe  FROM permisos P
+    			INNER JOIN roles_permisos RP ON P.id = RP.permiso_id
+    			WHERE RP.rol_id =  ' + rol_id + '
+    		) P
+    		ON T.id = P.id').to_a
+    rescue Exception => e
+      error = true
+      execption = e
+      status = 500
+      rpta = {
+        :tipo_mensaje => 'error',
+        :mensaje => [
+          'Se ha producido un error en listar los permisos del rol',
+          execption.message
+        ]}
+    end
+    status status
+    rpta.to_json
+  end
 end
