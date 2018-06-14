@@ -36,16 +36,16 @@ class MyApp < Sinatra::Base
         if nuevos.length != 0
           nuevos.each do |nuevo|
             n = Sistema.new(
-              :nombre => nuevo['nombre']
+              :nombre => nuevo['nombre'],
+              :version => nuevo['version'],
+              :repositorio => nuevo['repositorio']
             )
             n.save
             t = {
               :temporal => nuevo['id'],
-              :nuevo_id => nuevo['id'],
-              :version => nuevo['version'],
-              :repositorio => nuevo['repositorio']
+              :nuevo_id => n.id
             }
-            array_nuevos.push(t)
+						array_nuevos.push(t)
           end
         end
         if editados.length != 0
