@@ -7,3 +7,7 @@ end
 class Modulo < Sequel::Model(DB[:modulos])
 
 end
+
+class Subtitulo < Sequel::Model(DB[:subtitulos])
+
+end
