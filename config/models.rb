@@ -11,3 +11,7 @@ end
 class Subtitulo < Sequel::Model(DB[:subtitulos])
 
 end
+
+class Item < Sequel::Model(DB[:items])
+
+end

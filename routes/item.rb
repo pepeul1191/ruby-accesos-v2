@@ -1,12 +1,12 @@
 class MyApp < Sinatra::Base
-  get '/subtitulo/listar/:modulo_id' do
+  get '/item/listar/:subtitulo_id' do
     rpta = []
     error = false
     execption = nil
     status = 200
     begin
-      modulo_id = params['modulo_id']
-      rpta = Subtitulo.select(:id, :nombre).where(:modulo_id => modulo_id).all().to_a
+      subtitulo_id = params['subtitulo_id']
+      rpta = Item.select(:id, :nombre, :url).where(:subtitulo_id => subtitulo_id).all().to_a
     rescue Exception => e
       error = true
       execption = e
@@ -14,7 +14,7 @@ class MyApp < Sinatra::Base
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
-          'Se ha producido un error en listar los subtítulos del módulo',
+          'Se ha producido un error en listar los items del subtitulo',
           execption.message
         ]}
     end
@@ -22,12 +22,12 @@ class MyApp < Sinatra::Base
     rpta.to_json
   end
 
-  post '/subtitulo/guardar' do
+  post '/item/guardar' do
     data = JSON.parse(params[:data])
     nuevos = data['nuevos']
     editados = data['editados']
     eliminados = data['eliminados']
-    modulo_id = data['extra']['modulo_id']
+    subtitulo_id = data['extra']['subtitulo_id']
     rpta = []
     array_nuevos = []
     error = false
@@ -37,9 +37,10 @@ class MyApp < Sinatra::Base
       begin
         if nuevos.length != 0
           nuevos.each do |nuevo|
-            n = Subtitulo.new(
+            n = Item.new(
               :nombre => nuevo['nombre'],
-              :modulo_id => modulo_id
+              :url => nuevo['url'],
+              :subtitulo_id => subtitulo_id
             )
             n.save
             t = {
@@ -51,22 +52,23 @@ class MyApp < Sinatra::Base
         end
         if editados.length != 0
           editados.each do |editado|
-            e = Subtitulo.where(
+            e = Item.where(
               :id => editado['id']
             ).first
             e.nombre = editado['nombre']
+            e.url = editado['url']
             e.save
           end
         end
         if eliminados.length != 0
           eliminados.each do |eliminado|
-            Subtitulo.where(:id => eliminado).delete
+            Item.where(:id => eliminado).delete
           end
         end
         rpta = {
           :tipo_mensaje => 'success',
           :mensaje => [
-            'Se ha registrado los cambios en los subtitulos del módulo',
+            'Se ha registrado los cambios en los items del subtítulo',
             array_nuevos
           ]}
       rescue Exception => e
@@ -77,7 +79,7 @@ class MyApp < Sinatra::Base
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
-            'Se ha producido un error en guardar la tabla de subtitulos',
+            'Se ha producido un error en guardar la tabla de items',
             execption.message
           ]}
       end
