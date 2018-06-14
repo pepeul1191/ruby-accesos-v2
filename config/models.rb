@@ -15,3 +15,7 @@ end
 class Item < Sequel::Model(DB[:items])
 
 end
+
+class Permiso < Sequel::Model(DB[:permisos])
+
+end
