@@ -120,4 +120,61 @@ class MyApp < Sinatra::Base
     status status
     rpta.to_json
   end
+
+  post '/rol/permiso/guardar' do
+    data = JSON.parse(params[:data])
+    editados = data['editados']
+    rol_id = data['extra']['rol_id']
+    rpta = []
+    array_nuevos = []
+    error = false
+    execption = nil
+    status = 200
+    DB.transaction do
+      begin
+        if editados.length != 0
+          editados.each do |editado|
+            existe = editado['existe']
+            permiso_id = editado['id']
+            e = RolPermiso.where(
+              :permiso_id => permiso_id,
+              :rol_id => rol_id
+            ).first
+            if existe == 0 #borrar si existe
+              if e != nil
+                e.delete
+              end
+            elsif existe == 1 #crear si no existe
+              if e == nil
+                n = RolPermiso.new(
+                  :permiso_id => permiso_id,
+                  :rol_id => rol_id
+                )
+                n.save
+              end
+            end
+          end
+        end
+        rpta = {
+          :tipo_mensaje => 'success',
+          :mensaje => [
+            'Se ha registrado la asociación de permisos al rol',
+            array_nuevos
+          ]}
+      rescue Exception => e
+        Sequel::Rollback
+        error = true
+        execption = e
+        status = 500
+        rpta = {
+          :tipo_mensaje => 'error',
+          :mensaje => [
+            'Se ha producido un error en asociar los permisos al rol',
+            execption.message
+          ]}
+      end
+    end
+    status status
+    rpta.to_json
+  end
 end
