@@ -16,18 +16,18 @@ var SistemaPermisoView = ModalView.extend({
     "keyup #tablaPermiso > tbody > tr > td > input.text": "inputTextEscribirPermiso",
     "click #tablaPermiso > tbody > tr > td > i.quitar-fila": "quitarFilaPermiso",
   },
-    //eventos tabla de permisos
-    inputTextEscribirPermiso: function(event){
-      this.tablaPermiso.inputTextEscribir(event);
-    },
-    quitarFilaPermiso: function(event){
-      this.tablaPermiso.quitarFila(event);
-    },
-    guardarTablaPermiso: function(event){
-      this.tablaPermiso.extraData = {sistema_id: this.sistemaId};
-      this.tablaPermiso.guardarTabla(event);
-    },
-    agregarFilaPermiso: function(event){
-      this.tablaPermiso.agregarFila(event);
-    },
+  //eventos tabla de permisos
+  inputTextEscribirPermiso: function(event){
+    this.tablaPermiso.inputTextEscribir(event);
+  },
+  quitarFilaPermiso: function(event){
+    this.tablaPermiso.quitarFila(event);
+  },
+  guardarTablaPermiso: function(event){
+    this.tablaPermiso.extraData = {sistema_id: this.sistemaId};
+    this.tablaPermiso.guardarTabla(event);
+  },
+  agregarFilaPermiso: function(event){
+    this.tablaPermiso.agregarFila(event);
+  },
 });
