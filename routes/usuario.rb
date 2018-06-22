@@ -80,7 +80,46 @@ class MyApp < Sinatra::Base
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
-          'Se ha producido un error en  obtener el usuario y correo',
+          'Se ha producido un error en validar el nombre de usuario repetido',
+          execption.message
+        ]}.to_json
+    end
+    status status
+    rpta
+  end
+
+  post '/usuario/correo_repetido' do
+    rpta = 0
+    error = false
+    execption = nil
+    status = 200
+    begin
+      data = JSON.parse(params[:data])
+      usuario_id = data['id']
+      correo = data['correo']
+      rpta = 0
+      if usuario_id == 'E'
+        #SELECT COUNT(*) AS cantidad FROM usuarios WHERE correo = ?
+        rpta = Usuario.where(:correo => correo).count
+      else
+        #SELECT COUNT(*) AS cantidad FROM usuarios WHERE correo = ? AND id = ?
+        rpta = Usuario.where(:correo => correo, :id => usuario_id).count
+        if rpta == 1
+          rpta = 0
+        else
+          #SELECT COUNT(*) AS cantidad FROM usuarios WHERE correo = ?
+          rpta = Usuario.where(:correo => correo).count
+        end
+      end
+      rpta = rpta.to_s
+    rescue Exception => e
+      error = true
+      execption = e
+      status = 500
+      rpta = {
+        :tipo_mensaje => 'error',
+        :mensaje => [
+          'Se ha producido un error en validar el correo del usuario',
           execption.message
         ]}.to_json
     end
