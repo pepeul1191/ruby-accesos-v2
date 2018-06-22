@@ -31,3 +31,11 @@ end
 class Usuario < Sequel::Model(DB[:usuarios])
 
 end
+
+class EstadoUsuario < Sequel::Model(DB[:estado_usuarios])
+
+end
+
+class VWUsuarioEstadoEstado < Sequel::Model(DB[:vw_usuario_correo_estado])
+
+end
