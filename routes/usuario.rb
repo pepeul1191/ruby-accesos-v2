@@ -288,7 +288,7 @@ class MyApp < Sinatra::Base
         rpta = {
           :tipo_mensaje => 'success',
           :mensaje => [
-            'Se ha registrado la asociación de permisos al rol',
+            'Se ha registrado la asociación de sistemas al usuario',
           ]}
       rescue Exception => e
         Sequel::Rollback
@@ -296,7 +296,7 @@ class MyApp < Sinatra::Base
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
-            'Se ha producido un error en listar los sistemas del usuario',
+            'Se ha producido un error en asociar los sistemas del usuario',
             e.message
           ]}
       end
@@ -313,17 +313,17 @@ class MyApp < Sinatra::Base
         usuario_id = params[:usuario_id]
         sistema_id = params[:sistema_id]
         rpta = DB.fetch('
-    			SELECT T.id AS id, T.nombre AS nombre, (CASE WHEN (P.existe = 1) THEN 1 ELSE 0 END) AS existe, T.llave AS llave FROM
-    			(
-    				SELECT id, nombre, llave, 0 AS existe FROM permisos WHERE sistema_id = ' + sistema_id + '
-    			) T
-    			LEFT JOIN
-    			(
-    				SELECT P.id, P.nombre,  P.llave, 1 AS existe  FROM permisos P
-    				INNER JOIN usuarios_permisos UP ON P.id = UP.permiso_id
-    				WHERE UP.usuario_id = ' + usuario_id + '
-    			) P
-    			ON T.id = P.id').to_a
+          SELECT T.id AS id, T.nombre AS nombre, (CASE WHEN (P.existe = 1) THEN 1 ELSE 0 END) AS existe FROM
+          (
+            SELECT id, nombre, 0 AS existe FROM roles WHERE sistema_id = ' + sistema_id + '
+          ) T
+          LEFT JOIN
+          (
+            SELECT R.id, R.nombre, 1 AS existe  FROM roles R
+            INNER JOIN usuarios_roles UR ON R.id = UR.rol_id
+            WHERE UR.usuario_id = ' + usuario_id + '
+          ) P
+          ON T.id = P.id').to_a
       rescue Exception => e
         Sequel::Rollback
         status = 500
@@ -331,6 +331,57 @@ class MyApp < Sinatra::Base
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en listar los roles del usuario',
+            e.message
+          ]}
+      end
+    end
+    status status
+    rpta.to_json
+  end
+
+  post '/usuario/rol/guardar' do
+    rpta = []
+    status = 200
+    data = JSON.parse(params[:data])
+    editados = data['editados']
+    usuario_id = data['extra']['usuario_id']
+    DB.transaction do
+      begin
+        if editados.length != 0
+          editados.each do |editado|
+            existe = editado['existe']
+            rol_id = editado['id']
+            e = UsuarioRol.where(
+              :rol_id => rol_id,
+              :usuario_id => usuario_id
+            ).first
+            if existe == 0 #borrar si existe
+              if e != nil
+                e.delete
+              end
+            elsif existe == 1 #crear si no existe
+              if e == nil
+                n = UsuarioRol.new(
+                  :rol_id => rol_id,
+                  :usuario_id => usuario_id
+                )
+                n.save
+              end
+            end
+          end
+        end
+        rpta = {
+          :tipo_mensaje => 'success',
+          :mensaje => [
+            'Se ha registrado la asociación de roles al usuario',
+          ]}
+      rescue Exception => e
+        Sequel::Rollback
+        status = 500
+        rpta = {
+          :tipo_mensaje => 'error',
+          :mensaje => [
+            'Se ha producido un error en asociar los roles del usuario',
             e.message
           ]}
       end
@@ -347,17 +398,17 @@ class MyApp < Sinatra::Base
         usuario_id = params[:usuario_id]
         sistema_id = params[:sistema_id]
         rpta = DB.fetch('
-    			SELECT T.id AS id, T.nombre AS nombre, (CASE WHEN (P.existe = 1) THEN 1 ELSE 0 END) AS existe FROM
-    			(
-    				SELECT id, nombre, 0 AS existe FROM roles WHERE sistema_id = ' + sistema_id + '
-    			) T
-    			LEFT JOIN
-    			(
-    				SELECT R.id, R.nombre, 1 AS existe  FROM roles R
-    				INNER JOIN usuarios_roles UR ON R.id = UR.rol_id
-    				WHERE UR.usuario_id = ' + usuario_id + '
-    			) P
-    			ON T.id = P.id').to_a
+          SELECT T.id AS id, T.nombre AS nombre, (CASE WHEN (P.existe = 1) THEN 1 ELSE 0 END) AS existe, T.llave AS llave FROM
+          (
+            SELECT id, nombre, llave, 0 AS existe FROM permisos WHERE sistema_id = ' + sistema_id + '
+          ) T
+          LEFT JOIN
+          (
+            SELECT P.id, P.nombre,  P.llave, 1 AS existe  FROM permisos P
+            INNER JOIN usuarios_permisos UP ON P.id = UP.permiso_id
+            WHERE UP.usuario_id = ' + usuario_id + '
+          ) P
+          ON T.id = P.id').to_a
       rescue Exception => e
         Sequel::Rollback
         status = 500
