@@ -14,7 +14,8 @@
     var MODULOS_JSON = JSON.parse('<%=modulos%>');
     var ITEMS_JSON = JSON.parse('<%=items%>');
     var DATA = JSON.parse('<%=data%>');
-    var CSRF = "<%=constants[:CSRF]%>";
+    var CSRF = "<%=constants[:CSRF][:secret]%>";
+    var CSRF_KEY = "<%=constants[:CSRF][:key]%>";
   </script>
 </head>
 <body>

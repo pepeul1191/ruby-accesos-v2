@@ -39,7 +39,7 @@ class MyApp < Sinatra::Base
       ].to_json,
       :data => {
   			:mensaje => false,
-  			:titulo_pagina => 'Gestión de Agricultores',
+  			:titulo_pagina => 'Gestión de Accesos',
   			:modulo => 'Accesos',
   		}.to_json,
     }
