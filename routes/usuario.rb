@@ -423,4 +423,55 @@ class MyApp < Sinatra::Base
     status status
     rpta.to_json
   end
+
+  post '/usuario/permiso/guardar' do
+    rpta = []
+    status = 200
+    data = JSON.parse(params[:data])
+    editados = data['editados']
+    usuario_id = data['extra']['usuario_id']
+    DB.transaction do
+      begin
+        if editados.length != 0
+          editados.each do |editado|
+            existe = editado['existe']
+            permiso_id = editado['id']
+            e = UsuarioPermiso.where(
+              :permiso_id => permiso_id,
+              :usuario_id => usuario_id
+            ).first
+            if existe == 0 #borrar si existe
+              if e != nil
+                e.delete
+              end
+            elsif existe == 1 #crear si no existe
+              if e == nil
+                n = UsuarioPermiso.new(
+                  :permiso_id => permiso_id,
+                  :usuario_id => usuario_id
+                )
+                n.save
+              end
+            end
+          end
+        end
+        rpta = {
+          :tipo_mensaje => 'success',
+          :mensaje => [
+            'Se ha registrado la asociación de permisos al usuario',
+          ]}
+      rescue Exception => e
+        Sequel::Rollback
+        status = 500
+        rpta = {
+          :tipo_mensaje => 'error',
+          :mensaje => [
+            'Se ha producido un error en asociar los permisos del usuario',
+            e.message
+          ]}
+      end
+    end
+    status status
+    rpta.to_json
+  end
 end
