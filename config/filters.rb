@@ -14,12 +14,16 @@ class MyApp < Sinatra::Base
       end
     end
 
-    def check_session_true
-
+    def check_session_false
+      if session[:activo] == true then
+        halt redirect '/accesos/'
+      end
     end
 
-    def check_session_false
-
+    def check_session_true
+      if session[:activo] != true then
+        halt redirect '/error/access/505'
+      end
     end
   end
 end

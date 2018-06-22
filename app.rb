@@ -45,41 +45,39 @@ class MyApp < Sinatra::Base
     redirect '/accesos/'
   end
 
-  get '/error/access/:error' do
-    numero_error = params[:error]
-    case numero_error.to_i
-    when 404
+  get '/error/access/:numero_error' do
+    numero_error = params[:numero_error]
+    error = ''
+    puts numero_error
+    case numero_error
+    when '404'
       error = {
         :numero => 404,
         :mensaje => 'Archivo no encontrado',
         :descripcion => 'La página que busca no se encuentra en el servidor',
         :icono => 'fa fa-exclamation-triangle'
       }
-    when 501
+    when '501'
       error = {
         :numero => 501,
         :mensaje => 'Página en Contrucción',
         :descripcion => 'Lamentamos el incoveniente, estamos trabajando en ello.',
         :icono => 'fa fa-code-fork'
       }
-    when 505
+    when '505'
       error = {
         :numero => 505, :mensaje => 'Acceso restringido',
         :descripcion => 'Necesita estar logueado.',
         :icono => 'fa fa-ban'
       }
-    when 8080
+    when '8080'
       error = {
         :numero => 8080, :mensaje => 'Tiempo de la sesion agotado',
         :descripcion => 'Vuelva a ingresar al sistema.',
         :icono => 'fa fa-clock-o'
       }
     else
-      error = {
-        :numero => 404, :mensaje => 'Archivo no encontrado',
-        :descripcion => 'La página que busca no se encuentra en el servidor',
-        :icono => 'fa fa-exclamation-triangle'
-      }
+
     end
     locals = {
       :constants => CONSTANTS,
@@ -88,7 +86,7 @@ class MyApp < Sinatra::Base
       :error => error,
       :title => 'Error'
     }
-    status 404
+    status numero_error
     erb :'error/access', :layout => :'layouts/blank', :locals => locals
   end
 

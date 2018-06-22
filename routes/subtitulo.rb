@@ -1,4 +1,8 @@
 class MyApp < Sinatra::Base
+  before '/subtitulo*' do
+    check_csrf
+  end
+
   get '/subtitulo/listar/:modulo_id' do
     rpta = []
     error = false

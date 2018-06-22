@@ -1,6 +1,6 @@
 class MyApp < Sinatra::Base
   before '/login' do
-    check_session_true
+    check_session_false
   end
 
   get '/login' do
@@ -87,7 +87,7 @@ class MyApp < Sinatra::Base
   end
 
   before '/accesos/' do
-    check_session_false
+    check_session_true
   end
 
   get '/accesos/' do
@@ -101,6 +101,7 @@ class MyApp < Sinatra::Base
           :nombre => 'Accesos',
         },
       ].to_json,
+      :title => 'Gestińo de Accesos',
       :items => [
         {
           :subtitulo => 'Opciones',
