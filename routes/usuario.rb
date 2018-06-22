@@ -3,6 +3,36 @@ class MyApp < Sinatra::Base
     check_csrf
   end
 
+  post '/usuario/validar' do
+    rpta = 0
+    error = false
+    status = 200
+    begin
+      usuario = JSON.parse(params[:usuario])
+      contrasenia = JSON.parse(params[:contrasenia])
+      rpta = Usuario.where(:usuario => params['usuario'], :contrasenia => params['contrasenia']).count()
+      if rpta == 1
+        usuario_id = Usuario.select(:id).where(:usuario => usuario, :contrasenia => contrasenia).first().id
+        Acceso.new(
+          :usuario_id => usuario_id,
+          :momento => Time.now
+        ).save
+      end
+      rpta = rpta.to_s
+    rescue Exception => e
+      error = true
+      status = 500
+      rpta = {
+        :tipo_mensaje => 'error',
+        :mensaje => [
+          'Se ha producido un error en validar el usuario y contraseña',
+          e.message
+        ]}.to_json
+    end
+    status status
+    rpta
+  end
+
   get '/usuario/listar' do
     rpta = []
     error = false
