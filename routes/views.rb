@@ -172,6 +172,7 @@ class MyApp < Sinatra::Base
       :error => error,
       :title => 'Error'
     }
+    status 404
     erb :'error/access', :layout => :'layouts/blank', :locals => locals
   end
 end

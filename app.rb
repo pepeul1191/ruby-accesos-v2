@@ -43,4 +43,35 @@ class MyApp < Sinatra::Base
   get '/' do
     redirect '/accesos/'
   end
+
+  not_found do
+    rpta = ''
+    status = 404
+    case request.env['REQUEST_METHOD']
+    when 'GET'
+      error = {
+        :numero => 404,
+        :mensaje => 'Archivo no encontrado',
+        :descripcion => 'La página que busca no se encuentra en el servidor',
+        :icono => 'fa fa-exclamation-triangle'
+      }
+      locals = {
+        :constants => CONSTANTS,
+        :csss => error_css(),
+        :jss => error_js(),
+        :error => error,
+        :title => 'Error'
+      }
+      status 404
+      return erb :'error/access', :layout => :'layouts/blank', :locals => locals
+    else
+      rpta = {
+        :tipo_mensaje => 'error',
+        :mensaje => [
+          'Recurso no encontrado',
+          'El recurso que busca no se encuentra en el servidor'
+        ]}
+    end
+    rpta.to_json
+  end
 end

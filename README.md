@@ -47,3 +47,4 @@ Tipos de Datos de Columnas
 + http://sequel.jeremyevans.net/rdoc/files/doc/dataset_filtering_rdoc.html
 + http://sequel.jeremyevans.net/rdoc/files/doc/cheat_sheet_rdoc.html
 + https://stackoverflow.com/questions/6916626/sinatra-helper-in-external-file
++ https://stackoverflow.com/questions/35787395/how-to-access-incoming-headers-in-sinatra
