@@ -229,4 +229,38 @@ class MyApp < Sinatra::Base
     status status
     rpta.to_json
   end
+
+  get '/usuario/sistema/:usuario_id' do
+    rpta = []
+    status = 200
+    DB.transaction do
+      begin
+        usuario_id = params[:usuario_id]
+        rpta = DB.fetch('
+          SELECT T.id AS id, T.nombre AS nombre, (CASE WHEN (P.existe = 1) THEN 1 ELSE 0 END) AS existe FROM
+          (
+            SELECT id, nombre, 0 AS existe FROM sistemas
+          ) T
+          LEFT JOIN
+          (
+            SELECT S.id, S.nombre, 1 AS existe FROM sistemas S
+            INNER JOIN usuarios_sistemas US ON US.sistema_id = S.id
+            WHERE US.usuario_id = ?
+          ) P
+          ON T.id = P.id', usuario_id).to_a
+      rescue Exception => e
+        Sequel::Rollback
+        execption = e
+        status = 500
+        rpta = {
+          :tipo_mensaje => 'error',
+          :mensaje => [
+            'Se ha producido un error en listar los sistemas del usuario',
+            execption.message
+          ]}
+      end
+    end
+    status status
+    rpta.to_json
+  end
 end
