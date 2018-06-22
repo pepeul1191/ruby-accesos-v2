@@ -1,4 +1,10 @@
 class MyApp < Sinatra::Base
+  before '/sistema*' do
+    csrf_key = 'HTTP_' + CONSTANTS[:CSRF][:key].upcase
+    csrf_val = CONSTANTS[:CSRF][:secret]
+    puts request.env[csrf_key]
+  end
+
   get '/sistema/listar' do
     rpta = []
     error = false

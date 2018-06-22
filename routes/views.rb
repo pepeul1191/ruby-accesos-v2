@@ -1,4 +1,10 @@
 class MyApp < Sinatra::Base
+  before '/login' do
+    if session[:activo] == true then
+      redirect '/accesos/'
+    end
+  end
+
   get '/login' do
     locals = {
       :constants => CONSTANTS,
@@ -78,6 +84,16 @@ class MyApp < Sinatra::Base
     end
   end
 
+  get '/accesos' do
+    redirect '/accesos/'
+  end
+
+  before '/accesos/' do
+    if session[:activo] != true then
+      redirect '/error/access/505'
+    end
+  end
+
   get '/accesos/' do
     locals = {
       :constants => CONSTANTS,
@@ -111,5 +127,51 @@ class MyApp < Sinatra::Base
   		}.to_json,
     }
 		erb :'home/index', :layout => :'layouts/app', :locals => locals
+  end
+
+  get '/error/access/:error' do
+    numero_error = params[:error]
+    case numero_error.to_i
+    when 404
+      error = {
+        :numero => 404,
+        :mensaje => 'Archivo no encontrado',
+        :descripcion => 'La página que busca no se encuentra en el servidor',
+        :icono => 'fa fa-exclamation-triangle'
+      }
+    when 501
+      error = {
+        :numero => 501,
+        :mensaje => 'Página en Contrucción',
+        :descripcion => 'Lamentamos el incoveniente, estamos trabajando en ello.',
+        :icono => 'fa fa-code-fork'
+      }
+    when 505
+      error = {
+        :numero => 505, :mensaje => 'Acceso restringido',
+        :descripcion => 'Necesita estar logueado.',
+        :icono => 'fa fa-ban'
+      }
+    when 8080
+      error = {
+        :numero => 8080, :mensaje => 'Tiempo de la sesion agotado',
+        :descripcion => 'Vuelva a ingresar al sistema.',
+        :icono => 'fa fa-clock-o'
+      }
+    else
+      error = {
+        :numero => 404, :mensaje => 'Archivo no encontrado',
+        :descripcion => 'La página que busca no se encuentra en el servidor',
+        :icono => 'fa fa-exclamation-triangle'
+      }
+    end
+    locals = {
+      :constants => CONSTANTS,
+      :csss => error_css(),
+      :jss => error_js(),
+      :error => error,
+      :title => 'Error'
+    }
+    erb :'error/access', :layout => :'layouts/blank', :locals => locals
   end
 end

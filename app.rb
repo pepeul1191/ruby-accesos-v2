@@ -41,7 +41,6 @@ class MyApp < Sinatra::Base
   end
 
   get '/' do
-    status 500
-    'Error: Url Vacía'
+    redirect '/accesos/'
   end
 end
