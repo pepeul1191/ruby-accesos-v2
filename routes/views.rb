@@ -10,6 +10,32 @@ class MyApp < Sinatra::Base
 		erb :'login/index', :layout => :'layouts/blank', :locals => locals
   end
 
+  get '/login/cerrar' do
+    session.clear
+    redirect '/login'
+  end
+
+  get '/login/ver' do
+    rpta = ''
+    status = 200
+    begin
+    rpta = rpta + 'estado : ' + session[:activo].to_s + '<br>'
+    rpta = rpta + 'momento : ' + session[:momento].to_s + '<br>'
+    rpta = rpta + 'usuario : ' + session[:usuario] + '<br>'
+    rescue TypeError => e
+      execption = e
+      status = 500
+      rpta = {
+        :tipo_mensaje => 'error',
+        :mensaje => [
+          'Se ha producido un error en mostrar los datos de la sesión',
+          execption.message
+        ]}.to_json
+    end
+    status status
+    rpta
+  end
+
   post '/login/acceder' do
     mensaje = ''
     continuar = true
@@ -29,7 +55,7 @@ class MyApp < Sinatra::Base
       if continuar == true then
         usuario = params['usuario']
         contrasenia = params['contrasenia']
-        if usuario != CONSTANTS[:login][:usuario] and contrasenia != CONSTANTS[:login][:contrasenia] then
+        if usuario != CONSTANTS[:login][:usuario] or contrasenia != CONSTANTS[:login][:contrasenia] then
           mensaje = 'Usuario y/o contraenia no coinciden'
           continuar = false
         end
