@@ -27,3 +27,7 @@ end
 class RolPermiso < Sequel::Model(DB[:roles_permisos])
 
 end
+
+class Usuario < Sequel::Model(DB[:usuarios])
+
+end
