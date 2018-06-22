@@ -4,6 +4,7 @@ require_relative 'config/constants'
 require_relative 'config/routes'
 require_relative 'config/models'
 require_relative 'config/helpers.rb'
+require_relative 'config/filters.rb'
 
 class MyApp < Sinatra::Base
   enable :method_override
@@ -42,6 +43,53 @@ class MyApp < Sinatra::Base
 
   get '/' do
     redirect '/accesos/'
+  end
+
+  get '/error/access/:error' do
+    numero_error = params[:error]
+    case numero_error.to_i
+    when 404
+      error = {
+        :numero => 404,
+        :mensaje => 'Archivo no encontrado',
+        :descripcion => 'La página que busca no se encuentra en el servidor',
+        :icono => 'fa fa-exclamation-triangle'
+      }
+    when 501
+      error = {
+        :numero => 501,
+        :mensaje => 'Página en Contrucción',
+        :descripcion => 'Lamentamos el incoveniente, estamos trabajando en ello.',
+        :icono => 'fa fa-code-fork'
+      }
+    when 505
+      error = {
+        :numero => 505, :mensaje => 'Acceso restringido',
+        :descripcion => 'Necesita estar logueado.',
+        :icono => 'fa fa-ban'
+      }
+    when 8080
+      error = {
+        :numero => 8080, :mensaje => 'Tiempo de la sesion agotado',
+        :descripcion => 'Vuelva a ingresar al sistema.',
+        :icono => 'fa fa-clock-o'
+      }
+    else
+      error = {
+        :numero => 404, :mensaje => 'Archivo no encontrado',
+        :descripcion => 'La página que busca no se encuentra en el servidor',
+        :icono => 'fa fa-exclamation-triangle'
+      }
+    end
+    locals = {
+      :constants => CONSTANTS,
+      :csss => error_css(),
+      :jss => error_js(),
+      :error => error,
+      :title => 'Error'
+    }
+    status 404
+    erb :'error/access', :layout => :'layouts/blank', :locals => locals
   end
 
   not_found do

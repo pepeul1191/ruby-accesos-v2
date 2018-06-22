@@ -21,6 +21,10 @@ class MyApp < Sinatra::Base
       end
       rpta
     end
+
+    def demo
+      redirect '/logines'
+    end
   end
 end
 
