@@ -5,7 +5,6 @@ class MyApp < Sinatra::Base
 
   get '/item/listar/:subtitulo_id' do
     rpta = []
-    execption = nil
     status = 200
     begin
       subtitulo_id = params['subtitulo_id']
@@ -32,7 +31,6 @@ class MyApp < Sinatra::Base
     subtitulo_id = data['extra']['subtitulo_id']
     rpta = []
     array_nuevos = []
-    execption = nil
     status = 200
     DB.transaction do
       begin

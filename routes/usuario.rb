@@ -6,7 +6,6 @@ class MyApp < Sinatra::Base
   get '/usuario/listar' do
     rpta = []
     error = false
-    execption = nil
     status = 200
     begin
       rpta = Usuario.select(:id, :usuario, :correo).all().to_a
@@ -29,7 +28,6 @@ class MyApp < Sinatra::Base
   get '/usuario/obtener_usuario_correo/:usuario_id' do
     rpta = []
     error = false
-    execption = nil
     status = 200
     begin
       usuario_id = params['usuario_id']
@@ -52,7 +50,6 @@ class MyApp < Sinatra::Base
   post '/usuario/nombre_repetido' do
     rpta = 0
     error = false
-    execption = nil
     status = 200
     begin
       data = JSON.parse(params[:data])
@@ -91,7 +88,6 @@ class MyApp < Sinatra::Base
   post '/usuario/correo_repetido' do
     rpta = 0
     error = false
-    execption = nil
     status = 200
     begin
       data = JSON.parse(params[:data])
@@ -130,7 +126,6 @@ class MyApp < Sinatra::Base
   post '/usuario/contrasenia_repetida' do
     rpta = 0
     error = false
-    execption = nil
     status = 200
     begin
       data = JSON.parse(params[:data])
@@ -156,8 +151,6 @@ class MyApp < Sinatra::Base
   post '/usuario/guardar_usuario_correo' do
     data = JSON.parse(params[:usuario])
     rpta = []
-    array_nuevos = []
-    execption = nil
     status = 200
     DB.transaction do
       begin
@@ -180,7 +173,6 @@ class MyApp < Sinatra::Base
           :tipo_mensaje => 'success',
           :mensaje => [
             'Se ha registrado los cambios en los datos generales del usuario',
-            array_nuevos
           ]}
       rescue Exception => e
         Sequel::Rollback
@@ -190,6 +182,46 @@ class MyApp < Sinatra::Base
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en guardar los datos generales del usuario',
+            execption.message
+          ]}
+      end
+    end
+    status status
+    rpta.to_json
+  end
+
+  post '/usuario/guardar_contrasenia' do
+    data = JSON.parse(params[:contrasenia])
+    rpta = []
+    status = 200
+    DB.transaction do
+      begin
+        id = data['id']
+        contrasenia = data['contrasenia']
+        DB.transaction do
+          begin
+            e = Usuario.where(:id => id).first
+            e.contrasenia = contrasenia
+            e.save
+          rescue Exception => e
+            error = true
+            execption = e
+            Sequel::Rollback
+          end
+        end
+        rpta = {
+          :tipo_mensaje => 'success',
+          :mensaje => [
+            'Se ha el cambio de contraseña del usuario',
+          ]}
+      rescue Exception => e
+        Sequel::Rollback
+        execption = e
+        status = 500
+        rpta = {
+          :tipo_mensaje => 'error',
+          :mensaje => [
+            'Se ha producido un error en actualizar la contraseña del usaurio',
             execption.message
           ]}
       end

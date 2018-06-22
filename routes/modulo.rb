@@ -5,7 +5,6 @@ class MyApp < Sinatra::Base
 
   get '/modulo/listar/:sistema_id' do
     rpta = []
-    execption = nil
     status = 200
     begin
       sistema_id = params['sistema_id']
@@ -32,7 +31,6 @@ class MyApp < Sinatra::Base
     sistema_id = data['extra']['sistema_id']
     rpta = []
     array_nuevos = []
-    execption = nil
     status = 200
     DB.transaction do
       begin

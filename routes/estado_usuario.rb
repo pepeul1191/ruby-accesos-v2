@@ -5,7 +5,6 @@ class MyApp < Sinatra::Base
 
   get '/estado_usuario/listar' do
     rpta = []
-    execption = nil
     status = 200
     begin
       rpta = EstadoUsuario.all().to_a

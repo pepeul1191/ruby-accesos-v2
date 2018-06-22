@@ -5,7 +5,6 @@ class MyApp < Sinatra::Base
 
   get '/sistema/listar' do
     rpta = []
-    execption = nil
     status = 200
     begin
       rpta = Sistema.all.to_a
@@ -30,7 +29,6 @@ class MyApp < Sinatra::Base
     eliminados = data['eliminados']
     rpta = []
     array_nuevos = []
-    execption = nil
     status = 200
     DB.transaction do
       begin
