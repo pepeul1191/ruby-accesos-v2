@@ -1,4 +1,15 @@
 class MyApp < Sinatra::Base
+  get '/login' do
+    locals = {
+      :constants => CONSTANTS,
+      :csss => login_css(),
+      :jss => login_js(),
+      :title => 'Bienvenido',
+      :mensaje => ''
+    }
+		erb :'login/index', :layout => :'layouts/blank', :locals => locals
+  end
+
   get '/accesos/' do
     locals = {
       :constants => CONSTANTS,
@@ -8,18 +19,6 @@ class MyApp < Sinatra::Base
         {
           :url => 'accesos/',
           :nombre => 'Accesos',
-        },
-        {
-          :url => 'maestros/',
-          :nombre => 'Maestros',
-        },
-        {
-          :url => 'agricultores/',
-          :nombre => 'Agricultores',
-        },
-        {
-          :url => 'estaciones/',
-          :nombre => 'Estaciones',
         },
       ].to_json,
       :items => [
