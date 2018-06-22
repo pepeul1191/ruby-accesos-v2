@@ -11,13 +11,12 @@ class MyApp < Sinatra::Base
       rpta = Usuario.select(:id, :usuario, :correo).all().to_a
     rescue Exception => e
       error = true
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en listar los usuarios',
-          execption.message
+          e.message
         ]}
     end
     status status
@@ -34,13 +33,12 @@ class MyApp < Sinatra::Base
       rpta = VWUsuarioEstadoEstado.where(:id => usuario_id).first()
     rescue Exception => e
       error = true
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en  obtener el usuario y correo',
-          execption.message
+          e.message
         ]}
     end
     status status
@@ -72,13 +70,12 @@ class MyApp < Sinatra::Base
       rpta = rpta.to_s
     rescue Exception => e
       error = true
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en validar el nombre de usuario repetido',
-          execption.message
+          e.message
         ]}.to_json
     end
     status status
@@ -110,13 +107,12 @@ class MyApp < Sinatra::Base
       rpta = rpta.to_s
     rescue Exception => e
       error = true
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en validar el correo del usuario',
-          execption.message
+          e.message
         ]}.to_json
     end
     status status
@@ -135,13 +131,12 @@ class MyApp < Sinatra::Base
       rpta = rpta.to_s
     rescue Exception => e
       error = true
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en validar la contraseña del usuario',
-          execption.message
+          e.message
         ]}.to_json
     end
     status status
@@ -165,7 +160,6 @@ class MyApp < Sinatra::Base
     				e.save
     			rescue Exception => e
     				error = true
-    				execption = e
     				Sequel::Rollback
     			end
     	  end
@@ -176,13 +170,12 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        execption = e
         status = 500
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en guardar los datos generales del usuario',
-            execption.message
+            e.message
           ]}
       end
     end
@@ -205,7 +198,6 @@ class MyApp < Sinatra::Base
             e.save
           rescue Exception => e
             error = true
-            execption = e
             Sequel::Rollback
           end
         end
@@ -216,13 +208,12 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        execption = e
         status = 500
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en actualizar la contraseña del usaurio',
-            execption.message
+            e.message
           ]}
       end
     end
@@ -250,13 +241,63 @@ class MyApp < Sinatra::Base
           ON T.id = P.id', usuario_id).to_a
       rescue Exception => e
         Sequel::Rollback
-        execption = e
         status = 500
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en listar los sistemas del usuario',
-            execption.message
+            e.message
+          ]}
+      end
+    end
+    status status
+    rpta.to_json
+  end
+
+  post '/usuario/sistema/guardar' do
+    rpta = []
+    status = 200
+    data = JSON.parse(params[:data])
+    editados = data['editados']
+    usuario_id = data['extra']['usuario_id']
+    DB.transaction do
+      begin
+        if editados.length != 0
+          editados.each do |editado|
+            existe = editado['existe']
+            sistema_id = editado['id']
+            e = UsuarioSistema.where(
+              :sistema_id => sistema_id,
+              :usuario_id => usuario_id
+            ).first
+            if existe == 0 #borrar si existe
+              if e != nil
+                e.delete
+              end
+            elsif existe == 1 #crear si no existe
+              if e == nil
+                n = UsuarioSistema.new(
+                  :sistema_id => sistema_id,
+                  :usuario_id => usuario_id
+                )
+                n.save
+              end
+            end
+          end
+        end
+        rpta = {
+          :tipo_mensaje => 'success',
+          :mensaje => [
+            'Se ha registrado la asociación de permisos al rol',
+          ]}
+      rescue Exception => e
+        Sequel::Rollback
+        status = 500
+        rpta = {
+          :tipo_mensaje => 'error',
+          :mensaje => [
+            'Se ha producido un error en listar los sistemas del usuario',
+            e.message
           ]}
       end
     end

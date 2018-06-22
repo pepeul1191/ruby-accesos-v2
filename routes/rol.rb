@@ -10,13 +10,12 @@ class MyApp < Sinatra::Base
       sistema_id = params['sistema_id']
       rpta = Rol.select(:id, :nombre).where(:sistema_id => sistema_id).all().to_a
     rescue Exception => e
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en listar los roles del sistema',
-          execption.message
+          e.message
         ]}
     end
     status status
@@ -70,13 +69,12 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        execption = e
         status = 500
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en guardar la tabla de roles',
-            execption.message
+            e.message
           ]}
       end
     end
@@ -103,13 +101,12 @@ class MyApp < Sinatra::Base
     		) P
     		ON T.id = P.id').to_a
     rescue Exception => e
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en listar los permisos del rol',
-          execption.message
+          e.message
         ]}
     end
     status status
@@ -121,7 +118,6 @@ class MyApp < Sinatra::Base
     editados = data['editados']
     rol_id = data['extra']['rol_id']
     rpta = []
-    array_nuevos = []
     status = 200
     DB.transaction do
       begin
@@ -152,17 +148,15 @@ class MyApp < Sinatra::Base
           :tipo_mensaje => 'success',
           :mensaje => [
             'Se ha registrado la asociación de permisos al rol',
-            array_nuevos
           ]}
       rescue Exception => e
         Sequel::Rollback
-        execption = e
         status = 500
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en asociar los permisos al rol',
-            execption.message
+            e.message
           ]}
       end
     end

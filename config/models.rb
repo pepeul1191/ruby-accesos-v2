@@ -32,6 +32,10 @@ class Usuario < Sequel::Model(DB[:usuarios])
 
 end
 
+class UsuarioSistema < Sequel::Model(DB[:usuarios_sistemas])
+
+end
+
 class EstadoUsuario < Sequel::Model(DB[:estado_usuarios])
 
 end

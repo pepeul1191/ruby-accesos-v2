@@ -9,13 +9,12 @@ class MyApp < Sinatra::Base
     begin
       rpta = Sistema.all.to_a
     rescue Exception => e
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en listar los sistemas',
-          execption.message
+          e.message
         ]}
     end
     status status
@@ -71,13 +70,12 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        execption = e
         status = 500
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en guardar la tabla de sistemas',
-            execption.message
+            e.message
           ]}
       end
     end

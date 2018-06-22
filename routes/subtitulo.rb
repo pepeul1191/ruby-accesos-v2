@@ -10,13 +10,12 @@ class MyApp < Sinatra::Base
       modulo_id = params['modulo_id']
       rpta = Subtitulo.select(:id, :nombre).where(:modulo_id => modulo_id).all().to_a
     rescue Exception => e
-      execption = e
       status = 500
       rpta = {
         :tipo_mensaje => 'error',
         :mensaje => [
           'Se ha producido un error en listar los subtítulos del módulo',
-          execption.message
+          e.message
         ]}
     end
     status status
@@ -70,13 +69,12 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        execption = e
         status = 500
         rpta = {
           :tipo_mensaje => 'error',
           :mensaje => [
             'Se ha producido un error en guardar la tabla de subtitulos',
-            execption.message
+            e.message
           ]}
       end
     end
