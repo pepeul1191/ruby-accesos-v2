@@ -5,13 +5,11 @@ class MyApp < Sinatra::Base
 
   get '/sistema/listar' do
     rpta = []
-    error = false
     execption = nil
     status = 200
     begin
       rpta = Sistema.all.to_a
     rescue Exception => e
-      error = true
       execption = e
       status = 500
       rpta = {
@@ -32,7 +30,6 @@ class MyApp < Sinatra::Base
     eliminados = data['eliminados']
     rpta = []
     array_nuevos = []
-    error = false
     execption = nil
     status = 200
     DB.transaction do
@@ -76,7 +73,6 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        error = true
         execption = e
         status = 500
         rpta = {

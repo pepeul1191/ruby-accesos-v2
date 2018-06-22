@@ -48,4 +48,43 @@ class MyApp < Sinatra::Base
     status status
     rpta.to_json
   end
+
+  post '/usuario/nombre_repetido' do
+    rpta = 0
+    error = false
+    execption = nil
+    status = 200
+    begin
+      data = JSON.parse(params[:data])
+  	  usuario_id = data['id']
+   	  usuario = data['usuario']
+  		rpta = 0
+  		if usuario_id == 'E'
+  			#SELECT COUNT(*) AS cantidad FROM usuarios WHERE usuario = ?
+  			rpta = Usuario.where(:usuario => usuario).count
+  		else
+  			#SELECT COUNT(*) AS cantidad FROM usuarios WHERE usuario = ? AND id = ?
+  			rpta = Usuario.where(:usuario => usuario, :id => usuario_id).count
+  			if rpta == 1
+  				rpta = 0
+  			else
+  				#SELECT COUNT(*) AS cantidad FROM usuarios WHERE usuario = ?
+  				rpta = Usuario.where(:usuario => usuario).count
+  			end
+  		end
+      rpta = rpta.to_s
+    rescue Exception => e
+      error = true
+      execption = e
+      status = 500
+      rpta = {
+        :tipo_mensaje => 'error',
+        :mensaje => [
+          'Se ha producido un error en  obtener el usuario y correo',
+          execption.message
+        ]}.to_json
+    end
+    status status
+    rpta
+  end
 end

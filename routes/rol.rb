@@ -5,14 +5,12 @@ class MyApp < Sinatra::Base
 
   get '/rol/listar/:sistema_id' do
     rpta = []
-    error = false
     execption = nil
     status = 200
     begin
       sistema_id = params['sistema_id']
       rpta = Rol.select(:id, :nombre).where(:sistema_id => sistema_id).all().to_a
     rescue Exception => e
-      error = true
       execption = e
       status = 500
       rpta = {
@@ -34,7 +32,6 @@ class MyApp < Sinatra::Base
     sistema_id = data['extra']['sistema_id']
     rpta = []
     array_nuevos = []
-    error = false
     execption = nil
     status = 200
     DB.transaction do
@@ -75,7 +72,6 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        error = true
         execption = e
         status = 500
         rpta = {
@@ -92,7 +88,6 @@ class MyApp < Sinatra::Base
 
   get '/rol/permiso/listar/:sistema_id/:rol_id' do
     rpta = []
-    error = false
     execption = nil
     status = 200
     begin
@@ -111,7 +106,6 @@ class MyApp < Sinatra::Base
     		) P
     		ON T.id = P.id').to_a
     rescue Exception => e
-      error = true
       execption = e
       status = 500
       rpta = {
@@ -131,7 +125,6 @@ class MyApp < Sinatra::Base
     rol_id = data['extra']['rol_id']
     rpta = []
     array_nuevos = []
-    error = false
     execption = nil
     status = 200
     DB.transaction do
@@ -167,7 +160,6 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        error = true
         execption = e
         status = 500
         rpta = {

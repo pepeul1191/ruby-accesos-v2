@@ -5,13 +5,11 @@ class MyApp < Sinatra::Base
 
   get '/estado_usuario/listar' do
     rpta = []
-    error = false
     execption = nil
     status = 200
     begin
       rpta = EstadoUsuario.all().to_a
     rescue Exception => e
-      error = true
       execption = e
       status = 500
       rpta = {

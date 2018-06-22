@@ -5,14 +5,12 @@ class MyApp < Sinatra::Base
 
   get '/subtitulo/listar/:modulo_id' do
     rpta = []
-    error = false
     execption = nil
     status = 200
     begin
       modulo_id = params['modulo_id']
       rpta = Subtitulo.select(:id, :nombre).where(:modulo_id => modulo_id).all().to_a
     rescue Exception => e
-      error = true
       execption = e
       status = 500
       rpta = {
@@ -34,7 +32,6 @@ class MyApp < Sinatra::Base
     modulo_id = data['extra']['modulo_id']
     rpta = []
     array_nuevos = []
-    error = false
     execption = nil
     status = 200
     DB.transaction do
@@ -75,7 +72,6 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        error = true
         execption = e
         status = 500
         rpta = {

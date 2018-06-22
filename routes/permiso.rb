@@ -5,14 +5,12 @@ class MyApp < Sinatra::Base
 
   get '/permiso/listar/:sistema_id' do
     rpta = []
-    error = false
     execption = nil
     status = 200
     begin
       sistema_id = params['sistema_id']
       rpta = Permiso.select(:id, :nombre, :llave).where(:sistema_id => sistema_id).all().to_a
     rescue Exception => e
-      error = true
       execption = e
       status = 500
       rpta = {
@@ -34,7 +32,6 @@ class MyApp < Sinatra::Base
     sistema_id = data['extra']['sistema_id']
     rpta = []
     array_nuevos = []
-    error = false
     execption = nil
     status = 200
     DB.transaction do
@@ -77,7 +74,6 @@ class MyApp < Sinatra::Base
           ]}
       rescue Exception => e
         Sequel::Rollback
-        error = true
         execption = e
         status = 500
         rpta = {
