@@ -8,7 +8,7 @@ class MyApp < Sinatra::Base
     status = 200
     begin
       sistema_id = params['sistema_id']
-      rpta = Modulo.select(:id, :url, :nombre).where(:sistema_id => sistema_id).all().to_a
+      rpta = Modulo.select(:id, :url, :icono, :nombre).where(:sistema_id => sistema_id).all().to_a
     rescue Exception => e
       status = 500
       rpta = {

@@ -8,9 +8,9 @@ class MyApp < Sinatra::Base
     error = false
     status = 200
     begin
-      usuario = JSON.parse(params[:usuario])
-      contrasenia = JSON.parse(params[:contrasenia])
-      rpta = Usuario.where(:usuario => params['usuario'], :contrasenia => params['contrasenia']).count()
+      usuario = params[:usuario]
+      contrasenia = params[:contrasenia]
+      rpta = Usuario.where(:usuario => usuario, :contrasenia => contrasenia).count()
       if rpta == 1
         usuario_id = Usuario.select(:id).where(:usuario => usuario, :contrasenia => contrasenia).first().id
         Acceso.new(
