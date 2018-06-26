@@ -51,3 +51,7 @@ end
 class VWUsuarioEstadoEstado < Sequel::Model(DB[:vw_usuario_correo_estado])
 
 end
+
+class Acceso < Sequel::Model(DB[:accesos])
+
+end
